@@ -4,21 +4,23 @@ open Contextive.LanguageServer.Server
 open Serilog
 open System
 
+// temporarily log to file with full json protocol logging even in release build
+// see https://github.com/dev-cycles/contextive/issues/28#issuecomment-2237920627
 let setupLogging =
-#if DEBUG
+    //#if DEBUG
     Log.Logger <-
         LoggerConfiguration()
             .MinimumLevel.Verbose()
             .Enrich.FromLogContext()
             .WriteTo.File(
-                // formatter = Formatting.Json.JsonFormatter(), // uncomment to enable detailed logging of protocol messages
+                formatter = Formatting.Json.JsonFormatter(), // uncomment to enable detailed logging of protocol messages
                 path = "log.txt",
                 rollingInterval = RollingInterval.Day
             )
             .CreateLogger()
-#else
-    ()
-#endif
+// #else
+//     ()
+// #endif
 
 let private startWithConsole =
     setupAndStartLanguageServer (Console.OpenStandardInput()) (Console.OpenStandardOutput())
