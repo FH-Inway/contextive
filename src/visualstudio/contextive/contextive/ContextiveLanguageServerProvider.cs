@@ -31,7 +31,7 @@ public class ContextiveLanguageServerProvider : LanguageServerProvider
     [VisualStudioContribution]
     public static DocumentTypeConfiguration AnyDocumentType => new("any")
     {
-        FileExtensions = new[] { ".yml" },
+        FileExtensions = new[] { ".*" },
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
