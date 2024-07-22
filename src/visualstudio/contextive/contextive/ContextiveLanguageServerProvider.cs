@@ -31,7 +31,7 @@ public class ContextiveLanguageServerProvider : LanguageServerProvider
     [VisualStudioContribution]
     public static DocumentTypeConfiguration AnyDocumentType => new("any")
     {
-        FileExtensions = [".yml"],
+        FileExtensions = new[] { ".yml" },
         BaseDocumentType = LanguageServerBaseDocumentType,
     };
 
@@ -44,14 +44,24 @@ public class ContextiveLanguageServerProvider : LanguageServerProvider
 
     public override Task<IDuplexPipe?> CreateServerConnectionAsync(CancellationToken cancellationToken)
     {
-        ProcessStartInfo info = new();
-        info.FileName = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
-            @"Contextive.LanguageServer.exe");
-        info.RedirectStandardInput = true;
-        info.RedirectStandardOutput = true;
-        info.UseShellExecute = false;
-        info.CreateNoWindow = true;
+        string workingDirectory = Path.Combine(
+            Path.GetTempPath(),
+            "contextive",
+            Guid.NewGuid().ToString());
+        Directory.CreateDirectory(workingDirectory);
+
+        ProcessStartInfo info = new()
+        {
+            FileName = Path.Combine(
+                // Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
+                @"D:\Repositories\GitHub\contextive\src\language-server\Contextive.LanguageServer\bin\Debug\net8.0",
+                @"Contextive.LanguageServer.exe"),
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            UseShellExecute = false, // needs to be false so that IO streams can be redirected
+            CreateNoWindow = true,
+            WorkingDirectory = workingDirectory
+        };
 
         Process process = new Process();
         process.StartInfo = info;
